@@ -24,7 +24,7 @@ time_unit time(F&& fun) {
 
 template<typename T>
 void print_aligned(T&& t, std::ostream& os = std::cout) {
-    os << std::setw(12) << std::forward<T>(t);
+    os << std::setw(16) << std::forward<T>(t);
 }
 
 template<typename Map, typename Clock, typename RAIter>
@@ -64,14 +64,23 @@ int main() {
     for (int i = 0; i < DATA_SIZE; ++i)
         data.push_back(i);
     print_aligned("structure");
-    print_aligned("size");
+    print_aligned("entries");
+    print_aligned("key_complexity");
     print_aligned("insert");
     print_aligned("query");
     std::cout << std::endl;
-    print_aligned("bst");
-    print_aligned("very big");
-    eval_map<std::map<int, int>, std::chrono::high_resolution_clock>(std::cout, data.begin(), data.end());
-    print_aligned("hashmap");
-    print_aligned("very big");
-    eval_map<std::unordered_map<int, int>, std::chrono::high_resolution_clock>(std::cout, data.begin(), data.end());
+    for (int i = 8; i < 20; ++i) {
+        auto subset = random_subset(data, 1 << i);
+        print_aligned("bst");
+        print_aligned(1 << i);
+        print_aligned("int");
+        eval_map<std::map<int, int>, std::chrono::high_resolution_clock>(std::cout, subset.begin(), subset.end());
+    }
+    for (int i = 8; i < 20; ++i) {
+        auto subset = random_subset(data, 1 << i);
+        print_aligned("hashmap");
+        print_aligned(1 << i);
+        print_aligned("int");
+        eval_map<std::unordered_map<int, int>, std::chrono::high_resolution_clock>(std::cout, subset.begin(), subset.end());
+    }
 }
