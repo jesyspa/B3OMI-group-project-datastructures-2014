@@ -22,6 +22,11 @@ time_unit time(F&& fun) {
     return Clock::now() - start;
 }
 
+template<typename T>
+void print_aligned(T&& t, std::ostream& os = std::cout) {
+    os << std::setw(12) << std::forward<T>(t);
+}
+
 template<typename Map, typename Clock, typename RAIter>
 void eval_map(std::ostream& os, RAIter begin, RAIter end) {
     time_unit t;
@@ -31,7 +36,7 @@ void eval_map(std::ostream& os, RAIter begin, RAIter end) {
             std::for_each(begin, end, [&](auto x) { ins_map.insert(std::make_pair(x, x)); });
         });
     }
-    os << std::setw(12) << t.count()/REPEAT_COUNT << '\t';
+    print_aligned(t.count()/REPEAT_COUNT);
     Map query_map;
     std::for_each(begin, end, [&](auto x) { query_map.insert(std::make_pair(x, x)); });
     t += time<Clock>([&]() {
@@ -39,7 +44,7 @@ void eval_map(std::ostream& os, RAIter begin, RAIter end) {
             std::for_each(begin, end, [&](auto x) { query_map.find(x); });
         }
     });
-    os << std::setw(12) << t.count()/REPEAT_COUNT << '\t';
+    print_aligned(t.count()/REPEAT_COUNT);
     os << '\n';
 }
 
@@ -58,8 +63,15 @@ int main() {
     std::vector<int> data;
     for (int i = 0; i < DATA_SIZE; ++i)
         data.push_back(i);
-    std::cout << std::setw(12) << "insert";
-    std::cout << std::setw(12) << "query";
+    print_aligned("structure");
+    print_aligned("size");
+    print_aligned("insert");
+    print_aligned("query");
     std::cout << std::endl;
+    print_aligned("bst");
+    print_aligned("very big");
     eval_map<std::map<int, int>, std::chrono::high_resolution_clock>(std::cout, data.begin(), data.end());
+    print_aligned("hashmap");
+    print_aligned("very big");
+    eval_map<std::unordered_map<int, int>, std::chrono::high_resolution_clock>(std::cout, data.begin(), data.end());
 }
