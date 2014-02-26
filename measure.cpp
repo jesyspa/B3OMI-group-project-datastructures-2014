@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <chrono>
+#include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <map>
@@ -29,7 +30,7 @@ void print_aligned(T&& t, std::ostream& os = std::cout) {
 
 template<typename Map, typename RAIter>
 void fill_map(Map& map, RAIter begin, RAIter end) {
-    std::for_each(begin, end, [&](auto x) { map.insert(std::make_pair(x, x)); });
+    std::for_each(begin, end, [&](auto x) { map.insert(std::make_pair(x, 0)); });
 }
 
 template<typename Map, typename Clock, typename RAIter>
@@ -85,20 +86,40 @@ std::set<T> random_subset(std::vector<T> const& vec, std::size_t size) {
 }
 
 template<typename Map, typename T>
-void eval_structure(std::ostream& os, std::string const& structure_name, std::vector<T> const& data) {
+void eval_structure(std::ostream& os, std::string const& structure_name, std::string const& data_size, std::vector<T> const& data) {
     for (int i = 8; i < 20; ++i) {
         auto subset = random_subset(data, 1 << i);
         print_aligned(structure_name, os);
         print_aligned(1 << i);
-        print_aligned("int");
+        print_aligned(data_size);
         eval_map<Map, std::chrono::high_resolution_clock>(os, subset.begin(), subset.end());
     }
 }
 
-int main() {
-    std::vector<int> data;
-    for (int i = 0; i < DATA_SIZE; ++i)
-        data.push_back(i);
+std::vector<int> make_ints(int size) {
+    std::vector<int> vec(size);
+    std::iota(vec.begin(), vec.end(), 0);
+    return vec;
+}
+
+std::vector<std::string> read_lines(std::istream&& is) {
+    std::vector<std::string> vec;
+    std::string line;
+    while (std::getline(is, line))
+        vec.push_back(line);
+    return vec;
+}
+
+int main(int argc, char* argv[]) {
+    if (argc < 3) {
+        std::cerr << "usage: " << argv[0] << " domains full_paths\n";
+        return -1;
+    }
+
+    auto data_ips = make_ints(DATA_SIZE);
+    auto data_domains = read_lines(std::ifstream(argv[1]));
+    auto data_fullpaths = read_lines(std::ifstream(argv[2]));
+
     print_aligned("structure");
     print_aligned("entries");
     print_aligned("key_complexity");
@@ -109,6 +130,11 @@ int main() {
     print_aligned("query");
 #endif
     std::cout << std::endl;
-    eval_structure<std::map<int, int>>(std::cout, "bst", data);
-    eval_structure<std::unordered_map<int, int>>(std::cout, "hashmap", data);
+
+    eval_structure<std::map<int, int>>(std::cout, "bst", "ip", data_ips);
+    eval_structure<std::map<std::string, int>>(std::cout, "bst", "domain", data_domains);
+    eval_structure<std::map<std::string, int>>(std::cout, "bst", "full_path", data_fullpaths);
+    eval_structure<std::unordered_map<int, int>>(std::cout, "hashmap", "ip", data_ips);
+    eval_structure<std::unordered_map<std::string, int>>(std::cout, "hashmap", "domain", data_domains);
+    eval_structure<std::unordered_map<std::string, int>>(std::cout, "hashmap", "full_path", data_fullpaths);
 }
