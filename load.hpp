@@ -2,5 +2,7 @@
 
 #include <string>
 #include <vector>
+#include <iosfwd>
 
-std::vector<std::string> read_dataset(std::string const& filename);
+std::vector<int> make_ints(int size);
+std::vector<std::string> read_lines(std::istream&& is);
