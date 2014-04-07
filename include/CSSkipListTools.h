@@ -22,7 +22,6 @@
 #include <stddef.h>
 #include <math.h>
 #include <iterator>
-#include "CSRNG.h"
 
 namespace CS
 {
@@ -130,86 +129,6 @@ public:
   }
 #endif
 
-// Contains forward pointers only.
-template <class T>
-class ForwardTinyNode
-{
-public:
-  typedef size_t size_type;
-  typedef ForwardTinyNode<T>* ptr_type;
-
-  T object; //!< Object associated with the key.
-  ptr_type pointers[1];
-  ForwardTinyNode<T>*& forward(unsigned int level) {return pointers[level];}
-  ForwardTinyNode<T>* forward(unsigned int level) const {return pointers[level];}
-  ForwardTinyNode(unsigned int level, const T &obj) : object(obj) CSClearNodesForward
-  explicit ForwardTinyNode(unsigned int level) CSClearNodesForward
-};
-
-// Contains forward pointers only.
-template <class T>
-class ForwardNode
-{
-public:
-  typedef size_t size_type;
-  typedef ForwardNode<T>* ptr_type;
-
-  T object; //!< Object associated with the key.
-  unsigned int level; //!< how many forward and backward pointers there are.
-  ptr_type pointers[1];
-  ForwardNode<T>*& forward(unsigned int level) {return pointers[level];}
-  ForwardNode<T>* forward(unsigned int level) const {return pointers[level];}
-  ForwardNode(unsigned int level, const T &obj) : level(level), object(obj) CSClearNodesForward
-  explicit ForwardNode(unsigned int level) : level(level) CSClearNodesForward
-};
-
-
-// Contains forward and index pointers only.
-template <class T>
-class ForwardIdxTinyNode
-{
-public:
-  typedef size_t size_type;
-  struct Pointers
-  {
-    size_type skip;
-    ForwardIdxTinyNode<T> *forward;
-  };
-  typedef Pointers ptr_type;
-
-  T object; //!< Object associated with the key.
-  ptr_type pointers[1];
-  ForwardIdxTinyNode<T>*& forward(unsigned int level) {return pointers[level].forward;}
-  size_type& skip(unsigned int level) {return pointers[level].skip;}
-  ForwardIdxTinyNode<T>* forward(unsigned int level) const {return pointers[level].forward;}
-  size_type skip(unsigned int level) const {return pointers[level].skip;}
-  ForwardIdxTinyNode(unsigned int level, const T &obj) : object(obj) CSClearNodesForwardIdx
-  explicit ForwardIdxTinyNode(unsigned int level) CSClearNodesForwardIdx
-};
-
-// Contains forward and index pointers only.
-template <class T>
-class ForwardIdxNode
-{
-public:
-  typedef size_t size_type;
-  struct Pointers
-  {
-    size_type skip;
-    ForwardIdxNode<T> *forward;
-  };
-  typedef Pointers ptr_type;
-
-  T object; //!< Object associated with the key.
-  unsigned int level; //!< how many forward and backward pointers there are.
-  ptr_type pointers[1];
-  ForwardIdxNode<T>*& forward(unsigned int level) {return pointers[level].forward;}
-  size_type& skip(unsigned int level) {return pointers[level].skip;}
-  ForwardIdxNode<T>* forward(unsigned int level) const {return pointers[level].forward;}
-  size_type skip(unsigned int level) const {return pointers[level].skip;}
-  ForwardIdxNode(unsigned int level, const T &obj) : level(level), object(obj) CSClearNodesForwardIdx
-  explicit ForwardIdxNode(unsigned int level) : level(level) CSClearNodesForwardIdx
-};
 
 // Contains forward and backward pointers only.
 template <class T>
@@ -235,60 +154,40 @@ public:
   explicit BidiNode(unsigned int level) : level(level) CSClearNodesBidi
 };
 
-// Contains forward, backward and index pointers.
-template <class T>
-class BidiIdxNode
-{
-public:
-  typedef size_t size_type;
-  struct Pointers
-  {
-    size_type skip;
-    BidiIdxNode<T> *forward;
-    BidiIdxNode<T> *backward;
-  };
-  typedef Pointers ptr_type;
-
-  T object; //!< Object associated with the key.
-  unsigned int level; //!< how many forward and backward pointers there are.
-  ptr_type pointers[1];
-  BidiIdxNode<T>*& forward(unsigned int level) {return pointers[level].forward;}
-  BidiIdxNode<T>*& backward(unsigned int level) {return pointers[level].backward;}
-  size_type& skip(unsigned int level) {return pointers[level].skip;}
-  BidiIdxNode<T>* forward(unsigned int level) const {return pointers[level].forward;}
-  BidiIdxNode<T>* backward(unsigned int level) const {return pointers[level].backward;}
-  size_type skip(unsigned int level) const {return pointers[level].skip;}
-  BidiIdxNode(unsigned int level, const T &obj) : level(level), object(obj) CSClearNodesBidiIdx
-  BidiIdxNode(unsigned int level) : level(level) CSClearNodesBidiIdx
-};
-
 // Allocates node
 // level is number of pointer levels.
 // obj is the entity to copy into the node.
 // T is the type of the node (ForwardNode, ForwardIdxNode, BidiNode and BidiIdxNode).
-#define CSAlloc2(level, obj, T) \
+#define CSAlloc2(alloc, level, obj, T) \
 { \
-  char *ptr = new char[sizeof(T)+level*(sizeof(typename T::ptr_type))]; \
-  T *item = new (ptr) T(level,obj); \
+  typename alloc::template rebind<char>::other aChar; \
+  auto ptr = aChar.allocate(sizeof(T)+level*sizeof(typename T::ptr_type)); \
+  typename alloc::template rebind<T>::other aT; \
+  auto item = reinterpret_cast<T*>(ptr); \
+  aT.construct(item, level, obj); \
   return item; \
 }
 
 // Allocates dummy node.
 // level is number of pointer levels.
 // T is the type of the node (ForwardNode, ForwardIdxNode, BidiNode and BidiIdxNode).
-#define CSAlloc(level, T) \
+#define CSAlloc(alloc, level, T) \
 { \
-  char *ptr = new char[sizeof(T)+level*(sizeof(typename T::ptr_type))]; \
-  T *item = new (ptr) T(level); \
+  typename alloc::template rebind<char>::other aChar; \
+  auto ptr = aChar.allocate(sizeof(T)+level*sizeof(typename T::ptr_type)); \
+  typename alloc::template rebind<T>::other aT; \
+  auto item = reinterpret_cast<T*>(ptr); \
+  aT.construct(item, level); \
   return item; \
 }
 
 // Free a node.
-#define CSFree(item, Tp) \
+#define CSFree(alloc, item, Tp) \
 { \
-  item->Tp::~Tp(); \
-  char *ptr = reinterpret_cast<char*>(item); \
-  delete[] ptr; \
+  typename alloc::template rebind<Tp>::other aTp; \
+  aTp.destroy(item); \
+  typename alloc::template rebind<char>::other aChar; \
+  aChar.deallocate(reinterpret_cast<char*>(item), sizeof(Tp) + item->level*sizeof(typename Tp::ptr_type)); \
 }
 
 // Defines operators == and != for iterators.
