@@ -67,12 +67,12 @@ int main(int argc, char* argv[]) {
     auto data_domains = read_lines(std::ifstream(argv[1]));
     auto data_fullpaths = read_lines(std::ifstream(argv[2]));
 
-    print_aligned("structure");
-    print_aligned("key");
-    print_aligned("entries");
-    print_aligned("insert");
-    print_aligned("query");
-    print_aligned("memory");
+    print_aligned("MapType");
+    print_aligned("KeyType");
+    print_aligned("Entries");
+    print_aligned("Insert");
+    print_aligned("Query");
+    print_aligned("Memory");
     std::cout << std::endl;
 
     std::ostream_iterator<Result> output(std::cout, "\n");
