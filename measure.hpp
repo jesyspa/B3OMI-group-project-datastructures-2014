@@ -2,6 +2,7 @@
 
 #include "data.hpp"
 #include "misc.hpp"
+#include "measuring_allocator.hpp"
 
 #include <algorithm>
 #include <iostream>
@@ -23,6 +24,9 @@ void fill_map(Map& map, RAIter begin, RAIter end) {
 
 template<typename Map, typename Clock, typename RAIter>
 time_unit eval_map_insertion(RAIter begin, RAIter end) {
+#ifdef SKIP_INSERTION
+    return {};
+#endif
     time_unit t{};
     for (int i = 0; i < REPEAT_COUNT; ++i) {
         Map ins_map;
@@ -35,6 +39,9 @@ time_unit eval_map_insertion(RAIter begin, RAIter end) {
 
 template<typename Map, typename Clock, typename RAIter>
 time_unit eval_map_query(RAIter begin, RAIter end) {
+#ifdef SKIP_QUERY
+    return {};
+#endif
     Map query_map;
     fill_map(query_map, begin, end);
     return time<Clock>([&]() {
@@ -46,11 +53,10 @@ time_unit eval_map_query(RAIter begin, RAIter end) {
 
 template<typename Map, typename Clock, typename RAIter>
 std::size_t eval_map_memory_usage(RAIter begin, RAIter end) {
+    reset_allocated();
     Map memory_map;
-    auto when_empty = get_memory_usage();
     fill_map(memory_map, begin, end);
-    auto when_full = get_memory_usage();
-    return when_full - when_empty;
+    return get_allocated();
 }
 
 template<typename T>
@@ -69,16 +75,18 @@ std::set<T> random_subset(std::vector<T> const& vec, std::size_t size) {
     return result;
 }
 
-template<typename Map, typename T, typename OutIter>
+template<template<template<typename> class> class MapTmpl, typename T, typename OutIter>
 std::vector<Result> eval_structure(std::string structure_name, std::string key_type, std::vector<T> const& data, OutIter out) {
     using clock = std::chrono::high_resolution_clock;
     std::vector<Result> results;
     for (std::size_t i = 8; i < 21; ++i) {
         auto const subset = random_subset(data, 1 << i);
         std::size_t const elements = 1 << i;
+        using Map = MapTmpl<std::allocator>;
+        using MemMeasureMap = MapTmpl<MeasuringAllocator>;
         auto const insert_result = eval_map_insertion<Map, clock>(subset.begin(), subset.end());
         auto const query_result = eval_map_query<Map, clock>(subset.begin(), subset.end());
-        auto const memory_usage = eval_map_memory_usage<Map, clock>(subset.begin(), subset.end());
+        auto const memory_usage = eval_map_memory_usage<MemMeasureMap, clock>(subset.begin(), subset.end());
         *out = {structure_name, key_type, elements, insert_result, query_result, memory_usage};
         ++out;
     }

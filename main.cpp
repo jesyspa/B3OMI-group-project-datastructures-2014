@@ -33,8 +33,27 @@ std::mt19937 Random::engine(std::random_device{}());
 template<typename T>
 using skiplist = CS::KeyedSkipList<T, int, std::less<T>, Random>;
 
+template<template<typename...> class Underlying, typename T>
+struct Map;
+
+template<typename T>
+struct Map<std::map, T> {
+    using value_type = std::pair<const T, int>;
+    template<template<typename> class Alloc>
+    using type = std::map<T, int, std::less<T>, Alloc<value_type>>;
+};
+
+template<typename T>
+struct Map<std::unordered_map, T> {
+    using value_type = std::pair<const T, int>;
+    template<template<typename> class Alloc>
+    using type = std::unordered_map<T, int, std::hash<T>, std::equal_to<T>, Alloc<value_type>>;
+};
 
 int main(int argc, char* argv[]) {
+    std::cout.sync_with_stdio(false);
+    std::cin.sync_with_stdio(false);
+    std::cerr.sync_with_stdio(false);
     if (argc < 3) {
         std::cerr << "usage: " << argv[0] << " domains full_paths\n";
         return -1;
@@ -54,13 +73,13 @@ int main(int argc, char* argv[]) {
 
     std::ostream_iterator<Result> output(std::cout, "\n");
 
-    eval_structure<skiplist<int>>("skiplist", "ip", data_ips, output);
-    eval_structure<skiplist<std::string>>("skiplist", "domain", data_domains, output);
-    eval_structure<skiplist<std::string>>("skiplist", "full_path", data_fullpaths, output);
-    eval_structure<std::map<int, int>>("bst", "ip", data_ips, output);
-    eval_structure<std::map<std::string, int>>("bst", "domain", data_domains, output);
-    eval_structure<std::map<std::string, int>>("bst", "full_path", data_fullpaths, output);
-    eval_structure<std::unordered_map<int, int>>("hashmap", "ip", data_ips, output);
-    eval_structure<std::unordered_map<std::string, int>>("hashmap", "domain", data_domains, output);
-    eval_structure<std::unordered_map<std::string, int>>("hashmap", "full_path", data_fullpaths, output);
+//    eval_structure<skiplist<int>>("skiplist", "ip", data_ips, output);
+//    eval_structure<skiplist<std::string>>("skiplist", "domain", data_domains, output);
+//    eval_structure<skiplist<std::string>>("skiplist", "full_path", data_fullpaths, output);
+    eval_structure<Map<std::map, int>::type>("bst", "ip", data_ips, output);
+    eval_structure<Map<std::map, std::string>::type>("bst", "domain", data_domains, output);
+    eval_structure<Map<std::map, std::string>::type>("bst", "full_path", data_fullpaths, output);
+    eval_structure<Map<std::unordered_map, int>::type>("hashmap", "ip", data_ips, output);
+    eval_structure<Map<std::unordered_map, std::string>::type>("hashmap", "domain", data_domains, output);
+    eval_structure<Map<std::unordered_map, std::string>::type>("hashmap", "full_path", data_fullpaths, output);
 }
