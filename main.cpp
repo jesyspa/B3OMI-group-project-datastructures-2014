@@ -68,10 +68,15 @@ int main(int argc, char* argv[]) {
     auto data_fullpaths = read_lines(std::ifstream(argv[2]));
 
     print_aligned("MapType");
+    std::cout << ',';
     print_aligned("KeyType");
+    std::cout << ',';
     print_aligned("Entries");
+    std::cout << ',';
     print_aligned("Insert");
+    std::cout << ',';
     print_aligned("Query");
+    std::cout << ',';
     print_aligned("Memory");
     std::cout << std::endl;
 
