@@ -78,14 +78,14 @@ template<template<template<typename> class> class MapTmpl, typename T, typename 
 std::vector<Result> eval_structure(std::string structure_name, std::string key_type, std::vector<T> const& data, OutIter out) {
     using clock = std::chrono::high_resolution_clock;
     std::vector<Result> results;
-    for (std::size_t i = 8; i < 21; ++i) {
+    for (std::size_t i = 8; i < 14; ++i) {
         auto const subset = random_subset(data, 1 << i);
         std::size_t const elements = 1 << i;
         using Map = MapTmpl<std::allocator>;
         using MemMeasureMap = MapTmpl<MeasuringAllocator>;
+        auto const memory_usage = eval_map_memory_usage<MemMeasureMap, clock>(subset.begin(), subset.end());
         auto const insert_result = eval_map_insertion<Map, clock>(subset.begin(), subset.end());
         auto const query_result = eval_map_query<Map, clock>(subset.begin(), subset.end());
-        auto const memory_usage = eval_map_memory_usage<MemMeasureMap, clock>(subset.begin(), subset.end());
         *out = {structure_name, key_type, elements, insert_result, query_result, memory_usage};
         ++out;
     }

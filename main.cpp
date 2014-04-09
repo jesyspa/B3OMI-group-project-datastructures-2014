@@ -82,13 +82,19 @@ int main(int argc, char* argv[]) {
 
     std::ostream_iterator<Result> output(std::cout, "\n");
 
+#ifndef NO_SKIPLIST
     eval_structure<Map<CS::KeyedSkipList, int>::type>("skiplist", "ip", data_ips, output);
     eval_structure<Map<CS::KeyedSkipList, std::string>::type>("skiplist", "domain", data_domains, output);
     eval_structure<Map<CS::KeyedSkipList, std::string>::type>("skiplist", "full_path", data_fullpaths, output);
+#endif
+#ifndef NO_BST
     eval_structure<Map<std::map, int>::type>("bst", "ip", data_ips, output);
     eval_structure<Map<std::map, std::string>::type>("bst", "domain", data_domains, output);
     eval_structure<Map<std::map, std::string>::type>("bst", "full_path", data_fullpaths, output);
+#endif
+#ifndef NO_HASHMAP
     eval_structure<Map<std::unordered_map, int>::type>("hashmap", "ip", data_ips, output);
     eval_structure<Map<std::unordered_map, std::string>::type>("hashmap", "domain", data_domains, output);
     eval_structure<Map<std::unordered_map, std::string>::type>("hashmap", "full_path", data_fullpaths, output);
+#endif
 }
