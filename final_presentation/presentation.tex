@@ -10,7 +10,7 @@
 \usecolortheme{dove}
 \usenavigationsymbolstemplate{}
 \title{Research?}
-\author{Pieter Brederode, Timo Koppenberg, \\ Jelco Bodewes, Anton Golov}
+\author{Pieter Brederode, Jelco Bodewes, \\ Timo Koppenberg, Anton Golov}
 \institute{B3OMI}
 
 
@@ -24,11 +24,71 @@
 \section{Introduction}
 \begin{frame}{Overview}
     \begin{itemize}
-        \item We did research!
-        \item That's it, really.
+        \item Problem Statement
+        \item Measurement Implementation
+        \item Results
+        \item Conclusions
     \end{itemize}
 \end{frame}
 
+\begin{frame}{Context: Whitelist/Blacklist}
+    \begin{itemize}
+        \item Program that given a URL decides whether to allow access.
+        \item Different possible granualities:
+        \begin{itemize}
+            \item IP address (32 bit integer)
+            \item Domain name (20 char string)
+            \item Full path (100 char string)
+        \end{itemize}
+        \item Fast insert and query
+        \item Low memory usage
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Implementation}
+    \begin{itemize}
+        \item C++
+        \begin{itemize}
+            \item We hoped for predictable performance\ldots
+            \item Standard library has hash table and binary search tree
+            \item Standard library has timing tools
+        \end{itemize}
+        \item Open source SkipList library (\texttt{CSSkipList})
+        \begin{itemize}
+            \item Weird results can be investigated directly
+            \item Turned out useful
+        \end{itemize}
+        \item POSIX API for memory usage
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Implementation Issues}
+    \begin{itemize}
+        \item POSIX API for memory is too coarse
+        \begin{itemize}
+            \item Added tracking of alloctions
+            \item Bonus: only track the data structure itself
+            \item Required modifying the SkipList
+        \end{itemize}
+        \item Performance is consistent, but unusual
+        \begin{itemize}
+            \item Hash tables are quirky
+            \item Suspect: the allocator
+            \item Run tests in separate process
+            \begin{itemize}
+                \item Or write your own allocator\ldots
+            \end{itemize}
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Small hash tables are expensive}
+
+\end{frame}
+
+\begin{frame}{Big hash tables are cheap}
+
+\end{frame}
 
 \section{Conclusions}
 
