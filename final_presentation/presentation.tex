@@ -34,14 +34,24 @@
 \begin{frame}{Context: Whitelist/Blacklist}
     \begin{itemize}
         \item Program that given a URL decides whether to allow access.
-        \item Different possible granualities:
+        \item Operations:
+        \begin{itemize}
+            \item Insert
+            \item Query
+        \end{itemize}
+        \item Multiple possible granualities:
         \begin{itemize}
             \item IP address (32 bit integer)
             \item Domain name (20 char string)
             \item Full path (100 char string)
         \end{itemize}
-        \item Fast insert and query
-        \item Low memory usage
+        \item Multiple possible data structures:
+        \begin{itemize}
+            \item Binary search tree
+            \item Hash table
+            \item Skip list
+        \end{itemize}
+        \item Multiple work loads
     \end{itemize}
 \end{frame}
 
@@ -50,16 +60,12 @@
     \begin{itemize}
         \item C++
         \begin{itemize}
-            \item We hoped for predictable performance\ldots
+            \item Predictable performance
             \item Standard library has hash table and binary search tree
             \item Standard library has timing tools
         \end{itemize}
         \item Open source SkipList library (\texttt{CSSkipList})
-        \begin{itemize}
-            \item Weird results can be investigated directly
-            \item Turned out useful
-        \end{itemize}
-        \item POSIX API for memory usage
+        \item Planned: POSIX API for memory usage
     \end{itemize}
 \end{frame}
 
@@ -67,9 +73,8 @@
     \begin{itemize}
         \item POSIX API for memory is too coarse
         \begin{itemize}
-            \item Added tracking of alloctions
+            \item Added tracking of allocations
             \item Bonus: only track the data structure itself
-            \item Required modifying the SkipList
         \end{itemize}
         \item Performance is consistent, but unusual
         \begin{itemize}
@@ -91,6 +96,25 @@
 \begin{frame}{Big hash tables are cheap}
     \centering
     \includegraphics[width=\textwidth]{hashtable_good.png}
+\end{frame}
+
+\begin{frame}{Implementation Issues}
+    \begin{itemize}
+        \item POSIX API for memory is too coarse
+        \begin{itemize}
+            \item Added tracking of allocations
+            \item Bonus: only track the data structure itself
+        \end{itemize}
+        \item Performance is consistent, but unusual
+        \begin{itemize}
+            \item Hash tables are quirky
+            \item Suspect: the allocator
+            \item Run tests in separate process
+            \begin{itemize}
+                \item Or write your own allocator\ldots
+            \end{itemize}
+        \end{itemize}
+    \end{itemize}
 \end{frame}
 
 \section{Results}
