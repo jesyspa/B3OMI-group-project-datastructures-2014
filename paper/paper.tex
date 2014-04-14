@@ -13,42 +13,68 @@
     \maketitle
 
     \begin{abstract}
-        We did research and got results.
+        We did research and got results~\cite{CallOfCthulhu}.
     \end{abstract}
 
 
     \section{Introduction}
-    
+
     We did research about what data structure could best be used to represent a blacklist in a 
     web-filter application.  We compared the insertion speed, query speed, and memory usage of three
     data structures: the binary search tree, the hash table, and the skip list.  We did this because
     we really liked these three structures. 
 
-	\section{Implementation}
-	
-	We used C++ as the implementation language.  libstdc++'s implementations of the standard
-	class templates \texttt{std::map} and \texttt{std::unordered\_map} were used for the binary search
-	tree and the hash table respectively.  As the C++ standard library lacks a skip list\footnote{reference to
-	the standard here}, we used an open-source third party library, \texttt{CSSkipList}\footnote{reference to
-	library home page here}.
-	
-	For our measurements, we used libstdc++'s implementation of the standard
-	\texttt{std::chrono::high\_resolution\_clock} class was used for time measurements.   Memory
-	measurements were performed by providing a custom allocator which tracked the number of memory
-	requests.  Note that the latter is a step away from our initial plan, where we stated we would use
-	the POSIX API\footnote{ref to the posix api}; unfortunately, that turned out to be too coarse-grained
-	for our purposes and we could thus get no accurate measurements that way.  The allocator-based technique
-	we employed required slight modifications to the skip list implementation we used, but this
-	shouldn't have caused a significant slowdown (if anything, it made things more fair, as now allocation
-	was done the same way in both systems).
-	
+    \section{Implementation}
+
+    We used C++ as the implementation language.  libstdc++'s implementations of the standard
+    class templates \texttt{std::map} and \texttt{std::unordered\_map} were used for the binary search
+    tree and the hash table respectively.  As the C++ standard library lacks a skip list\footnote{reference to
+    the standard here}, we used an open-source third party library, \texttt{CSSkipList}\footnote{reference to
+    library home page here}.
+
+    For our measurements, we used libstdc++'s implementation of the standard
+    \texttt{std::chrono::high\_resolution\_clock} class was used for time measurements.   Memory
+    measurements were performed by providing a custom allocator which tracked the number of memory
+    requests.  Note that the latter is a step away from our initial plan, where we stated we would use
+    the POSIX API\footnote{ref to the posix api}; unfortunately, that turned out to be too coarse-grained
+    for our purposes and we could thus get no accurate measurements that way.  The allocator-based technique
+    we employed required slight modifications to the skip list implementation we used, but this
+    shouldn't have caused a significant slowdown (if anything, it made things more fair, as now allocation
+    was done the same way in both systems).
+
 
     \section{Results}
 
-	Our results were great!  They are best analysed with a two-sample independent T test.  We had an
-	equal number of measurements about group 1 (with mean $x_1$ and standard deviation $\sigma_1$ and
-	about group 2 (with mean $x_2$ and standard deviation $\sigma_2$).  From this we can conclude that
-	data structure 1 is, on average, unquestionably superior.
+    Our results were great!  They are best analysed with a two-sample independent T test.  We had an
+    equal number of measurements about group 1 (with mean $x_1$ and standard deviation $\sigma_1$ and
+    about group 2 (with mean $x_2$ and standard deviation $\sigma_2$).  From this we can conclude that
+    data structure 1 is, on average, unquestionably superior.
+
+    \subsection{Possible errors caused by the implementation being not entirely perfect}
+
+    We really did our best to make sure these kinds of things didn't happen.  However, there were
+    still a number of measurements that do not follow from the underlying theory and are likely a
+    consequence of the hardware involved.
+
+    In particular, constructing a small hash table after constructing many big ones takes an
+    absurdly long time.  Only the first hash table is affected, and the time is comparable to the
+    time required to construct a 4k element hash table, which is just silly.  It probably has
+    something to do with the allocator but the reason for such behaviour is still unclear.  The fact
+    a hashtable needs contiguous memory probably has something to do with it, as well as the
+    allocator returning memory to the operating system.  Still, the latter should also have happened
+    with the other structures.  Bizarre.
+
+    A similar issue occurs around 4k or 8k (depending on data structure).  In all three cases, the
+    cost of insertion and querying grows at a higher rate than previously.  This is difficult to
+    quantify\footnote{Can we do some sort of linear regression to prove this is the case?}, but it
+    seems like some extra costs are added around then.  We suspect it is related either to the
+    allocator having to get more memory or the CPU cache running out and more cache misses occuring.
+    We'd measure that too if we had more time/resources.
+
+    A possibly related issue is that the standard deviation of our measurements rises around that
+    point.  That strengthens the possibility of it being allocator-related, as that would involve a
+    system call and could cause scheduling issues (despite the system being otherwise very close to
+    idle).
 
 
     \section{Conclusions}
