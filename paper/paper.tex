@@ -26,22 +26,38 @@
 
     \section{Implementation}
 
-    We used C++ as the implementation language.  libstdc++'s implementations of the standard
-    class templates \texttt{std::map} and \texttt{std::unordered\_map} were used for the binary search
-    tree and the hash table respectively.  As the C++ standard library lacks a skip list\footnote{reference to
-    the standard here}, we used an open-source third party library, \texttt{CSSkipList}\footnote{reference to
-    library home page here}.
+    We used C++ as the implementation language.  libstdc++'s implementations of the standard class
+    templates \texttt{std::map} and \texttt{std::unordered\_map} were used for the binary search
+    tree and the hash table respectively.  As the C++ standard library lacks a skip
+    list\footnote{reference to the standard here}, we used an open-source third party library,
+    \texttt{CSSkipList}\footnote{reference to library home page here}.  We also used libstdc++'s
+    implementation of \texttt{std::string} for our string handling needs.
 
     For our measurements, we used libstdc++'s implementation of the standard
     \texttt{std::chrono::high\_resolution\_clock} class was used for time measurements.   Memory
     measurements were performed by providing a custom allocator which tracked the number of memory
-    requests.  Note that the latter is a step away from our initial plan, where we stated we would use
-    the POSIX API\footnote{ref to the posix api}; unfortunately, that turned out to be too coarse-grained
-    for our purposes and we could thus get no accurate measurements that way.  The allocator-based technique
-    we employed required slight modifications to the skip list implementation we used, but this
-    shouldn't have caused a significant slowdown (if anything, it made things more fair, as now allocation
-    was done the same way in both systems).
+    requests.  Note that the latter is a step away from our initial plan, where we stated we would
+    use the POSIX API\footnote{ref to the posix api}; unfortunately, that turned out to be too
+    coarse-grained for our purposes and we could thus get no accurate measurements that way.  The
+    allocator-based technique we employed required slight modifications to the skip list
+    implementation we used, but this shouldn't have caused a significant slowdown (if anything, it
+    made things more fair, as now allocation was done the same way in both systems).
 
+    For our data, we took the system's dict file and the list of top level domains from Wikipedia
+    and combined the two to generate a bunch of things of the form \texttt{www.\$word.\$tld}, where
+    \texttt{\$word} is one of the dictionary words and \texttt{\$tld} is a top level domain.  Only
+    words consisting of the lowercase letters \texttt{a} through \texttt{z} were used.  Words were
+    limited to be from 8 to 12 characters and top-level domains were limited to exactly two letters.
+    All possible combinations were generated.  For the full paths, a number of domains were selected
+    and each was appended some number of random alphanumeric strings of eighty characters.  For more
+    details, see the code.
+
+    After some test runs we chose to decrease the number of runs used for measurements.  In the
+    proposal we had said that for each time measurement we would perform the relevant operation 1000
+    times and then take the average of that.  In practice, this made the tests run for longer than
+    we could afford and the results given by running 100 times were comparable so we only ran that
+    many times.  We expect the general result to be the same; see some later section for details
+    about what \emph{could} have gone wrong.
 
     \section{Results}
 
@@ -75,6 +91,11 @@
     point.  That strengthens the possibility of it being allocator-related, as that would involve a
     system call and could cause scheduling issues (despite the system being otherwise very close to
     idle).
+
+    Also, we have counterintuitive results that show that inserting or querying a full path is
+    faster than querying only the domain name.  This can partially be explained\footnote{Not really,
+    but ehhh.} by the fact that the string implementation we used was based on reference counting.
+    (If it'd also provide SSO, this would be easy to explain, but the darn thing doesn't.)
 
 
     \section{Conclusions}
