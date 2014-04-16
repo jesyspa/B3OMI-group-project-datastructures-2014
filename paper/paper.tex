@@ -18,12 +18,38 @@
 
 
     \section{Introduction}
-
-    We did research about what data structure could best be used to represent a blacklist in a 
-    web-filter application.  We compared the insertion speed, query speed, and memory usage of three
-    data structures: the binary search tree, the hash table, and the skip list.  We did this because
-    we really liked these three structures. 
-
+    A website filter is a program that catagorises websites in order to restrict access to designated
+    sites a user might visit. Commonly, the filter includes a blacklist of sites a user may not visit
+    unless they have certain credentials, or alternatively, includes a whitelist so it can blacklist
+    everything else. As the world-wide web is growing, these lists have grown larger to a point where
+    the speed of the underlying data structure has become a key issue. The time of both inserting and
+    looking up websites must be kept minimal. This all must be done without too much of a trade-off
+    between speed and memory usage.
+    
+    In technical terms, we would want the best data structure for associating many URLs with their
+    respective permissions, be it whitelisted or blacklisted for certain users. In researching the best
+    associative data structure we have picked implementations of the binary search tree, the hash map
+    and the skip list. These are the key options in such a problem. We are interested in finding which
+    one would perform best under a various number of insertions. The main research question of this paper
+    is as follows:
+    
+    How does the number of entries influence the performance of various associative data structures?
+    
+    While the decision of data structure might mostly be dependant on the number of entries, the complexity
+    of the key might also be of concern. Where permissions per page would be preferred, a more
+    resource optimal solution might be found in filtering only on domain or even IP adress.
+    In researching the influence of this we formulate a secondary research question:
+    
+    How does the complexity of the key influence the preformance of various associative data structures?
+    
+    In the following paper, we will attempt to answer these questions. The next section will give details
+    about our research plan and the scopes of our research. The section thereafter is about the implementation
+    of our setup in C++. Next, we will state our results, after which we will discuss set results and provide
+    several conclusions.    
+    %We did research about what data structure could best be used to represent a blacklist in a 
+    %web-filter application.  We compared the insertion speed, query speed, and memory usage of three
+    %data structures: the binary search tree, the hash table, and the skip list.  We did this because
+    %we really liked these three structures. 
     \section{Implementation}
     \subsubsection*{Datastructures}
 
@@ -104,7 +130,17 @@
 
 
     \section{Conclusions}
-
+    Our main point of research was researching which associative data structure performed best on
+    a various number of insertions, in terms of ths speed of insertions and look-ups, and memory.
+    In terms of speed we can state with certainty that the hash table is the superior data structure.
+    It outperforms the other two in almost every category, most significantly in larger datastructures where
+    it is often takes less than half as much time as the skiplist and less than twothirds the time of the binary search tree.
+    In most cases, the binary search tree is a bit slower, where the skip list is the slowest structure in
+    virtually every case. The only motivation for using a hashmap for this problem appears to be in memory usage,
+    although the advantage gained from this is quite small.
+    
+    
+    
     The skip list uses the least memory but is awful in every other imaginable way.  The hashmap is
     usually the best, except when we're dealing with a small number of integer keys and doing far more
     inserts than queries.  Note that this doesn't actually happen in practice.
