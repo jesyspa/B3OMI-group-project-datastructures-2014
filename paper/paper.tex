@@ -5,6 +5,7 @@
 \usepackage{amsfonts}
 \usepackage{amsthm}
 \usepackage{hyperref}
+\usepackage[pdftex]{graphicx}
 
 \title{Associative Data Structures for Website Filtering}
 \author{Jelco Bodewes, Pieter Brederode \\ Anton Golov, Timo Koppenberg }
@@ -139,10 +140,70 @@
 
     \section{Results}
 
-    Our results were great!  They are best analysed with a two-sample independent T test.  We had an
-    equal number of measurements about group 1 (with mean $x_1$ and standard deviation $\sigma_1$ and
-    about group 2 (with mean $x_2$ and standard deviation $\sigma_2$).  From this we can conclude that
-    data structure 1 is, on average, unquestionably superior.
+    Now that we have done the tests we have gained a lot of data that we can analyze and base our 
+    conclusions on. To do this, we will need to make our data more easily readable and use statistical
+    tests to draw conclusions.
+
+     First, to get an overview of our data, we will determine the averages for each scenario
+    (Datastructure, keytype and number of entries). For these averages we will look at operation speed per
+    element and memory usage per element. These can be seen in appendix \ref{App:AveResults}.
+
+    Now we may notice patterns in these averages, but to actually draw conclusions from the results, we will
+    need to use statistical methods. Depending on what results we want to compare there are different statistical
+    tests we can use. For our results we shall make use of independent samples T test and bivariate correlation test.
+
+    We shall use a significance of $0.95$ and we perform all statistical tests using the SPSS software package.
+
+    \subsection{Correlation between number of entries and results}
+    First we look at the influence the number of entries has on the per element speed of operations. For this
+    we will use a bivariate correlation test, since we want to check if there exists a correlation between 
+    the number of entries and the speed of operations.
+
+    Using analysis in SPSS it turns out that for almost all situations there exists positive correlations between the number
+    of entries and the speed of both queries and inserts. For both skiplist and BST these correlations are significant for all
+    keytypes. In all cases they have positive correlations between $0.4$ and $0.6$. 
+
+    However in the case of hashmaps we don't always have correlations. For all situations there does exist a positive correlation
+    between the number of entries and the per element query time. But for inserts there only exists a correlation when we 
+    look at Ip-address keys. If we look at Domain or Full path keys, there is no significant correlation between the number of entries
+    and the per element speed of insert operation. 
+
+    \subsection{Difference in performance between different keytypes}
+    Another part of our research question was: ``How does the complexity of the key influence the performance of 
+    various associative data structures?". Thus we would like to compare performance between the different keytypes. 
+    To look at this, we will set our number of entries to 4096 and compare the different key types.
+
+    It turns out the results are largely the same for the different data structures. For all of the data structures the use of
+    Ip-addresses is significantly faster in both query and insert speeds and has lower memory usage as well, this is even true
+    no matter the number of entries. 
+
+    For the difference between full path and domain the results become more complex. Looking at BST we get the following results:
+    Insert speed on full paths is significantly faster than insert speed on domains, however query speed on domains is significantly faster
+    than query speed on full paths. 
+
+    Looking at skiplist we get the following results: Insert speed on full paths is significantly faster than insert speed on domains. Query
+    speed however does not significantly differ between domains and full paths. If we look at higher number of entries query speed becomes 
+    significantly faster for full paths. 
+
+    Finally for our results with hashmap: Domains are significantly faster in both insert and query speed compared to full paths. 
+    This is true no matter the number of entries.
+
+    \subsection{Comparison between different data structures}
+    We would like to be able to use our results to determine which data structures are better in which cases. 
+    For this we will have to compare the different data structures for specific situations. We will use an independent
+    samples T test for this, since our data points are independent of each other. 
+
+    First off, for almost all situations with the keytypes Full path and Domain, hashmap is significantly faster than BST and skiplist
+    in both query speed and in insert speed. The only exception is in the case of 256 entries, which is most likely a
+    problem in our setup. 
+
+    More interesting are the speeds in the case of the Ip-addresses. While the hashmap is still significantly faster 
+    for query speeds, no matter the number of entries, there is a different result for the insert speeds. For 4096
+    entries or less, the BST significantly outperforms the hashmap in terms of insert speed. For any number of 
+    entries higher than that, the hashmap outperforms the BST again. 
+
+    
+    
 
     \subsection{Errors possibly caused by an imperfect implementation}
 
@@ -183,7 +244,7 @@
     datastructures where it often takes less than half as much time as the skiplist and less than
     two thirds the time of the binary search tree.  In most cases, the binary search tree is a bit
     slower, whereas the skip list is the slowest structure in virtually every case. The only
-    motivation for using a hashmap for this problem appears to be in memory usage, although the
+    motivation for using a skiplist for this problem appears to be in memory usage, although the
     advantage gained from this is relatively small.
 
     Our secondary point of research encompassed the effect of key complexity on associative data
@@ -213,5 +274,27 @@
     \bibliographystyle{alpha}
 
     \bibliography{paper}
+
+    \newpage
+    \appendix
+    \section{Average results} \label{App:AveResults}
+
+    \begin{figure}[h!]
+    \centering
+    \includegraphics[width=\textwidth]{Ip-address_averages.png}
+    \caption{The average per element results for each situation with Ip-adresses.}
+    \end{figure}
+
+    \begin{figure}[h!]
+    \centering
+    \includegraphics[width=\textwidth]{Domain_averages.png}
+    \caption{The average per element results for each situation with domain adresses.}
+    \end{figure}
+
+    \begin{figure}[h!]
+    \centering
+    \includegraphics[width=\textwidth]{Full_path_averages.png}
+    \caption{The average per element results for each situation with full path adresses.}
+    \end{figure}
 
 \end{document}
