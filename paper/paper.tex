@@ -259,16 +259,6 @@
 
     \section{Conclusions}
     Our main point of research was researching which associative data structure performed best on a
-<<<<<<< HEAD
-    various number of insertions, in terms of the speed of insertions and look-ups, and memory
-    usage.  In terms of speed we can state with certainty that the hash table is the superior data
-    structure.  It outperforms the other two in almost every category, most significantly in larger
-    datastructures where it often takes less than half as much time as the skiplist and less than
-    two thirds the time of the binary search tree.  In most cases, the binary search tree is a bit
-    slower, whereas the skip list is the slowest structure in virtually every case. The only
-    motivation for using a skiplist for this problem appears to be in memory usage, although the
-    advantage gained from this is relatively small.
-=======
     various number of insertions, in terms of the speed of insertions and queries, and in terms of
     memory necessary per element.  In terms of speed we can state with certainty that the hash table
     is the superior data structure.  It outperforms the other two in almost every category,
@@ -281,7 +271,6 @@
     usage is more important than query speeds; given that both insert and query operations take less
     than ten microseconds even in the largest maps we measured, this is likely the case if queries
     and inserts are rare.
->>>>>>> f949f55bf8e9e07dc478b0c2c19610b02b681477
 
     Our secondary point of research encompassed the effect of key complexity on associative data
     structures.  Our different types of keys were IP adresses, domain names and full path URLs.  Our
@@ -321,19 +310,19 @@
 
     \begin{figure}[h!]
     \centering
-    \includegraphics[width=\textwidth]{Ip-address_averages.png}
+    \includegraphics[width=\textwidth]{ip-address_averages.png}
     \caption{The average per element results for each situation with Ip-adresses.}
     \end{figure}
 
     \begin{figure}[h!]
     \centering
-    \includegraphics[width=\textwidth]{Domain_averages.png}
+    \includegraphics[width=\textwidth]{domain-averages.png}
     \caption{The average per element results for each situation with domain adresses.}
     \end{figure}
 
     \begin{figure}[h!]
     \centering
-    \includegraphics[width=\textwidth]{Full_path_averages.png}
+    \includegraphics[width=\textwidth]{full-path-averages.png}
     \caption{The average per element results for each situation with full path adresses.}
     \end{figure}
 
