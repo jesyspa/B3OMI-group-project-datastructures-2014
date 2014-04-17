@@ -123,17 +123,17 @@
 
     \subsection{Data Sources}
 
-    We performed tests using subsets of twelve different sizes, all of the form $2^x$ and with $8 <
-    x \le 20$.  The word list was obtained by taking the system's dictionary file and selecting all
-    words that contained only lowercase letters and that were at least 8 and at most 12 letters
+    We performed tests using subsets of thirteen different sizes, all of the form $2^x$ and with $8
+    \le x \le 20$.  The word list was obtained by taking the system's dictionary file and selecting
+    all words that contained only lowercase letters and that were at least 8 and at most 12 letters
     long.  The top-level domain list was obtained from Wikipedia, and filtered down to only those
     domains that consisted of two letters from the English alphabet.  The resulting domains were of
     the form \texttt{www.\$word.\$tld}, where \texttt{\$word} is one of words from the the word list
     and \texttt{\$tld} is a top level domain.  For the full paths, a number of domains were selected
     and each was appended a random alphanumeric string of eighty characters.  By using the same
     domain with multiple random strings, a sufficiently large number of paths was generated.
-    Finally, as described in the research plan, consecutive 32-bit integers starting from zero were used
-    for the IP addresses.
+    Finally, as described in the research plan, consecutive 32-bit integers starting from zero were
+    used for the IP addresses.
 
     \subsection{Measurements}
     \label{subsec:measurements}
@@ -160,101 +160,90 @@
 
     \section{Results}
 
-    Now that we have done the tests we have gained a lot of data that we can analyze and base our 
-    conclusions on. To do this, we will need to make our data more easily readable and use statistical
-    tests to draw conclusions.
+    Having done the tests, we have obtained a lot of data that we can base our conclusions on.  A
+    preliminary overview can be obtained in Appendix~\ref{App:AveResults}, which lists the average
+    per-element results we obtained.  However, in order to draw conclusions from our data we will
+    require statistical methods.  For our results, we shall make use of the independent samples
+    T-test and the bivariate correlation test.  In all cases, we will use a significance level of
+    $0.05$ and perform the tests using the SPSS software package.
 
-     First, to get an overview of our data, we will determine the averages for each scenario
-    (Datastructure, keytype and number of entries). For these averages we will look at operation speed per
-    element and memory usage per element. These can be seen in appendix \ref{App:AveResults}.
-
-    Now we may notice patterns in these averages, but to actually draw conclusions from the results, we will
-    need to use statistical methods. Depending on what results we want to compare there are different statistical
-    tests we can use. For our results we shall make use of independent samples T test and bivariate correlation test.
-
-    We shall use a significance of $0.95$ and we perform all statistical tests using the SPSS software package.
+    Note that in the following analyses, we do not consider the results of the $2^8$ group, as the
+    experimental errors involved were too significant.
 
     \subsection{Correlation between number of entries and results}
-    First we look at the influence the number of entries has on the per element speed of operations. For this
-    we will use a bivariate correlation test, since we want to check if there exists a correlation between 
-    the number of entries and the speed of operations.
 
-    Using analysis in SPSS it turns out that for almost all situations there exists positive correlations between the number
-    of entries and the speed of both queries and inserts. For both skiplist and BST these correlations are significant for all
-    keytypes. In all cases they have positive correlations between $0.4$ and $0.6$. 
+    Firstly, we shall look at the influence the number of entries has on the per element speed of
+    operations.  For this we will use a bivariate correlation test, since we want to check if there
+    exists a correlation between two variables of ratio levels of measurements.
 
-    However in the case of hashmaps we don't always have correlations. For all situations there does exist a positive correlation
-    between the number of entries and the per element query time. But for inserts there only exists a correlation when we 
-    look at Ip-address keys. If we look at Domain or Full path keys, there is no significant correlation between the number of entries
-    and the per element speed of insert operation. 
+    Using the analysis functions of SPSS shows that for almost all situations there exists a
+    positive correlation between the number of entries and the duration of both queries and inserts.
+    For both the skip list and the binary search tree, these correlations are significant for all
+    key types. In all cases they have positive correlation coefficients between $0.4$ and $0.6$.
+
+    In the case of hash table, however, we do not always find a correlation.  For all situations there does
+    exist a positive correlation between the number of entries and the per element query duration, but
+    the insertion duration is only correlated to the number of entries in the case of the IP address
+    key type.  For the domain and full path key types, no correlation between the number of entries
+    and the duration of insertion operations is observable.
 
     \subsection{Difference in performance between different keytypes}
-    Another part of our research question was: ``How does the complexity of the key influence the performance of 
-    various associative data structures?". Thus we would like to compare performance between the different keytypes. 
-    To look at this, we will set our number of entries to 4096 and compare the different key types.
 
-    It turns out the results are largely the same for the different data structures. For all of the data structures the use of
-    Ip-addresses is significantly faster in both query and insert speeds and has lower memory usage as well, this is even true
-    no matter the number of entries. 
+    In order to answer the second part of our research question, we must compare the behaviour of
+    the data structures given different key types.  We start by fixing the number of entries; we
+    chose to do this at 4096 elements.  We then again performed an independent samples T-test
+    using SPSS.
 
-    For the difference between full path and domain the results become more complex. Looking at BST we get the following results:
-    Insert speed on full paths is significantly faster than insert speed on domains, however query speed on domains is significantly faster
-    than query speed on full paths. 
+    The results are largely the same for all three data structures. For all of the data structures
+    the use of IP addresses gives significantly higher speeds both for query and insertion, and the
+    memory usage is lower.  These results can be replicated for all entry counts.
 
-    Looking at skiplist we get the following results: Insert speed on full paths is significantly faster than insert speed on domains. Query
-    speed however does not significantly differ between domains and full paths. If we look at higher number of entries query speed becomes 
-    significantly faster for full paths. 
+    The difference between the results for the full path and the domain key types is less clear-cut.
+    In the case of the binary search tree, the insertion speed for full paths is significantly higher
+    than the insertion speed for domains, while the opposite is true for query speeds.  The skip
+    list also has a significantly higher insertion speed for full paths than for domains, but there
+    is no significant difference for query speed unless we increase the number of elements.
 
-    Finally for our results with hashmap: Domains are significantly faster in both insert and query speed compared to full paths. 
-    This is true no matter the number of entries.
+    The hash table displays the expected behaviour, and both the insertion and query speeds for
+    domains are significantly higher than for full paths.
 
     \subsection{Comparison between different data structures}
-    We would like to be able to use our results to determine which data structures are better in which cases. 
-    For this we will have to compare the different data structures for specific situations. We will use an independent
-    samples T test for this, since our data points are independent of each other. 
 
-    First off, for almost all situations with the keytypes Full path and Domain, hashmap is significantly faster than BST and skiplist
-    in both query speed and in insert speed. The only exception is in the case of 256 entries, which is most likely a
-    problem in our setup. 
+    We would like to be able to use our results to determine which data structures are better in
+    which cases.  For this we will have to compare the different data structures for specific
+    situations. We will use an independent samples T test again for this, since our data points are
+    independent of each other.
 
-    More interesting are the speeds in the case of the Ip-addresses. While the hashmap is still significantly faster 
-    for query speeds, no matter the number of entries, there is a different result for the insert speeds. For 4096
-    entries or less, the BST significantly outperforms the hashmap in terms of insert speed. For any number of 
-    entries higher than that, the hashmap outperforms the BST again. 
-
-    
-    
+    For all element counts and domain or full path key types, the hash table has significantly higher insertion
+    and query speeds than the binary search tree and skip list.  For IP addresses, the results are
+    more interesting.  While the hash table is still significantly faster for query speeds for any
+    number of entries, the binary search tree wins on insertion speed when there are 4096 entries or
+    less.
 
     \subsection{Errors possibly caused by an imperfect implementation}
 
     There were a number of measurements that did not follow the underlying theory and are likely a
     consequence of the hardware involved.
 
-    In particular, constructing a small hash table\footnote{state the number of elements in a
-    "small" hash table} after constructing many big ones takes a disproportionally long time.  Only
-    the first hash table is affected, and the time is comparable to the time required to construct a
-    hash table with 4000 elements, which is illogical.  We assume this is caused by the allocator
-    but the reason for such behaviour is still unclear.  The fact that a hashtable needs contiguous
-    memory is likely to have some influence, as well as the allocator returning memory to the
-    operating system.  However, we reason the latter should also have happened with the other
-    structures.
+    In particular, constructing a small hash table after constructing many big ones reliably took a
+    disproportionally long time.  Only the first hash table is affected, and the time is comparable
+    to the time required to construct a hash table with 4000 elements.  We assume this is caused by
+    the allocator but the reason for such behaviour is still unclear.  The fact that a hash table
+    needs contiguous memory is likely to have some influence, as well as the allocator returning
+    memory to the operating system.  However, we reason the latter should also have happened with
+    the other structures.
 
     A similar issue occurs around 4000 or 8000 elements (depending on data structure).  For all
     three datastructures, the cost of inserting and querying grows at a higher rate than before.
-    This is difficult to quantify\footnote{Can we do some sort of linear regression to prove this is
-    the case?}, but it appears some extra load is added at that point.  We suspect it is related
+    This is difficult to quantify, but it appears some extra load is added at that point.  We suspect it is related
     either to the allocator having to acquire more memory or the CPU cache running out and more
-    cache misses occuring.  We would measure this as well, if there was more time.
+    cache misses occuring.
 
-    A potentially related issue is that the standard deviation of our measurements rises around the
-    same point.  That increases the likelihood of it being allocator-related, as that involves a
-    system call and could cause scheduling issues\footnote{elaborate/ref?}, despite the system being
-    otherwise very close to idle.
-
-    Also, we acquired counterintuitive results showing that inserting or querying a full path is
-    faster than querying only the domain name.  This can partially be explained\footnote{Not really,
-    but ehhh.}by the fact that the string implementation we used was based on reference counting.
-    %(If it'd also provide SSO, this would be easy to explain, but the darn thing doesn't.)
+    This is also a possible explanation that the results we obtained which claimed that operations
+    for a full path key are more efficient than identical operations for a domain key.  An
+    alternative explanation is that the differences in the data sets used for the keys made
+    the comparison cheaper for the full paths, despite their greater size.  However, the way we
+    constructed the sets would suggest the opposite.
 
 
     \section{Conclusions}
@@ -306,24 +295,24 @@
 
     \newpage
     \appendix
-    \section{Average results} \label{App:AveResults}
+    \section{Average Results} \label{App:AveResults}
 
     \begin{figure}[h!]
     \centering
-    \includegraphics[width=\textwidth]{ip-address_averages.png}
-    \caption{The average per element results for each situation with Ip-adresses.}
+    \includegraphics[width=\textwidth]{ip-address-averages.png}
+    \caption{Per element averages with the IP-address key type.}
     \end{figure}
 
     \begin{figure}[h!]
     \centering
     \includegraphics[width=\textwidth]{domain-averages.png}
-    \caption{The average per element results for each situation with domain adresses.}
+    \caption{Per element averages with the domain key type.}
     \end{figure}
 
     \begin{figure}[h!]
     \centering
     \includegraphics[width=\textwidth]{full-path-averages.png}
-    \caption{The average per element results for each situation with full path adresses.}
+    \caption{Per element averages with the full path key type.}
     \end{figure}
 
 \end{document}
