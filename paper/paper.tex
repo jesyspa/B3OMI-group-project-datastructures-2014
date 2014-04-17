@@ -37,7 +37,7 @@
 
     In technical terms, we are interested in the best data structure for associating many URLs with
     their respective permissions, be it whitelisted or blacklisted for certain users.  We have
-    chosen to compare the performance of the binary search tree, the hash map, and the skip list, as
+    chosen to compare the performance of the binary search tree, the hash table, and the skip list, as
     these are commonly employed in practice.  It is of particular interest how each data structure
     will scale as the number of elements rises.  We have thus chosen for our main research question
     the following:
@@ -89,6 +89,11 @@
     characteristics, while not disturbing measurements in ways that a stochastic element count
     likely would.
 
+    For memory measurements, such repeated runs were deemed unnecessary as the deviation there was
+    likely to be lower; a single map was thus constructed, and the difference in memory usage as
+    shown by the POSIX API would be recorded.  As discussed in Subsection~\ref{subsec:measurements},
+    this turned out to be unfeasible.
+
     We would ensure that all subset fit in main memory, as the alternative would significantly
     favour data structures that used less memory.  Furthermore, we would perform all time
     measurements repeatedly and then take the average in order to decrease the influence of timing
@@ -103,50 +108,53 @@
     necessary tools, and does not carry the risk of garbage collection pauses or effects due to
     ``warming-up time''.
 
+    The following is an overview of our implementation.  More specific details can be found in the
+    source code.\footnote{cite code here}
+
     \subsection{Data Structures}
 
-    Using C++ as the implementation language, we chose libstdc++'s implementations of the standard class
-    templates \texttt{std::map} and \texttt{std::unordered\_map} for the binary search
-    tree and the hash table respectively.  As the C++ standard library does not contain a skip
+    With C++ as the implementation language, we chose libstdc++'s implementations of the standard
+    class templates \texttt{std::map} and \texttt{std::unordered\_map} for the binary search tree
+    and the hash table respectively.  As the C++ standard library does not contain a skip
     list\footnote{reference to the standard here}, we used an open-source third party library,
     \texttt{CSSkipList}\footnote{reference to library home page here}.  We also used libstdc++'s
     implementation of \texttt{std::string} for our string handling\footnote{specify?}needs.
 
     \subsection{Data Sources}
-    For our data, we used datasets containing $2^x$ elements with $x$ an integer such that $8 < x <
-    21$. Thus we have twelve different dataset sizes. We took the system's dictionary file and the
-    list of top level domains from Wikipedia and combined these to generate a list of items in the
-    form \texttt{www.\$word.\$tld}, where \texttt{\$word} is one of words from the the dictionary
-    and \texttt{\$tld} is a top level domain.  Only words consisting of the lowercase letters
-    \texttt{a} through \texttt{z} were used. Constraining the words to consist of 8 to 12 characters
-    and limiting the top-level domains to exactly two letters, all possible combinations were
-    generated.  For the full paths, a number of domains were selected and each was appended a random
-    alphanumeric string of eighty characters.  Finally, for the third type of key, an IP address, we
-    used 32 bit integers. The exact implementation can be viewed in the sourcecode\footnote{ref to
-    apendix or code dump}.
+
+    We performed tests using subsets of twelve different sizes, all of the form $2^x$ and with $8 <
+    x \le 20$.  The word list was obtained by taking the system's dictionary file and selecting all
+    words that contained only lowercase letters and that were at least 8 and at most 12 letters
+    long.  The top-level domain list was obtained from Wikipedia, and filtered down to only those
+    domains that consisted of two letters from the English alphabet.  The resulting domains were of
+    the form \texttt{www.\$word.\$tld}, where \texttt{\$word} is one of words from the the word list
+    and \texttt{\$tld} is a top level domain.  For the full paths, a number of domains were selected
+    and each was appended a random alphanumeric string of eighty characters.  By using the same
+    domain with multiple random strings, a sufficiently large number of paths was generated.
+    Finally, as described in the research plan, consecutive 32-bit integers starting from zero were used
+    for the IP addresses.
 
     \subsection{Measurements}
     \label{subsec:measurements}
+
     For our time measurements, we used libstdc++'s implementation of the standard
     \texttt{std::chrono::high\_resolution\_clock} class.  There is no official documentation about
     the resolution of this clock, but measurements show that it is likely below one microsecond,
     which is sufficient for our purposes.\footnote{\url{http://stackoverflow.com/a/5524138/559931}}
 
     Memory measurements were performed by providing a custom allocator which tracked the number of
-    memory requests.  Note that the latter deviates from our initial plan, where we
-    stated\footnote{ref?}we would use the POSIX API\footnote{ref to the posix api}.  Unfortunately,
-    that turned out to be too coarse-grained for our purposes and we could thus get no accurate
-    measurements.  The allocator-based technique we employed did require some slight modifications
-    to the skip list implementation we used, but this should not have caused a significant slowdown.
-    We assume that any influence will only have made the tests more fair, as now allocation was done
-    the same way in all three setups.
+    memory requests.  Note that the latter deviates from our initial plan, where we stated we would
+    use the POSIX API.  Unfortunately, the measurements provided by that turned out to be too
+    coarse-grained for our purposes, and our initial measurements were unusable.  The
+    allocator-based technique we employed did require some slight modifications to the skip list
+    implementation we used, but this should not have caused a significant slowdown.  We assume that
+    any influence will only have made the tests more fair, as now allocation was done the same way
+    in all three structures.
 
-    After some tests we chose to decrease the number of runs used for measurements.  In the proposal
-    we stated that for each time measurement we would perform the relevant operation 1000 times and
-    then take the average of that.  In practice, this made the tests run for longer than we could
-    afford. Because the results given by performing 100 runs were comparable, we settled for that.
-    We expect the general result to be similar; refer to section\footnote{ref}for details about what
-    \emph{could} have gone wrong.
+    After running a number of tests we chose to decrease the number of times we repeated each run.
+    We had set out to perform each measurement 1000 times and take the average over that.  In
+    parctice, however, the results obtained by performing only 100 runs did not vary greatly, and
+    allowed us to perform more individual measurements.
 
 
     \section{Results}
