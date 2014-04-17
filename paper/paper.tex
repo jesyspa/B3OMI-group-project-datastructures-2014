@@ -7,25 +7,25 @@
 \usepackage{hyperref}
 
 \title{Associative Data Structures for Website Filtering}
-\author{Pieter Brederode, Timo Koppenberg, \\ Jelco Bodewes, Anton Golov}
+\author{Jelco Bodewes, Pieter Brederode \\ Anton Golov, Timo Koppenberg }
 
 \begin{document}
     \maketitle
 
     \begin{abstract}
-        In this paper, we will research associative data structures. This is done in the context of
-        a website filter. We look at three different data structures, the hash map, binary search tree
+        In this paper, we will research associative data structures for searching. This is done in the context of
+        a website filter. We look at three different data structures: the hash map, the binary search tree
         and the skip list. We insert keys of three different types, namely IP adress, domain name and
-        full path URL. We judge the competency of our data strucutre based on insert time, query time
+        full path URL. We judge the competency of our data strucutre based on insertion times, query times
         and memory usage, inserting data sets of sizes $2^x$ for $8 \le x \le 20$. We describe the details
         of our research and the implementation using C++. The results are that hash maps are much faster
-        than the other structures, where skip lists use the least memory and binary search trees are
+        than the other structures, skip lists use the least memory and binary search trees are
         only useful with very few insertions of simple keys and more insertions than queries.
     \end{abstract}
 
 
     \section{Introduction}
-    A website filter is a program that catagorises websites in order to restrict access to designated
+    A website filter is a program that categorises websites in order to restrict access to designated
     sites a user might visit. Commonly, the filter includes a blacklist of sites a user may not visit
     unless they have certain credentials, or alternatively, includes a whitelist so it can blacklist
     everything else. As the world-wide web is growing, these lists have grown larger to a point where
@@ -49,7 +49,7 @@
     
     \begin{quotation}How does the complexity of the key influence the preformance of various associative data structures?\end{quotation}
     
-    In the following paper, we will attempt to answer these questions. The next section will give details
+    In the following paper, we will attempt to answer these questions. The next section will provide details
     about our research plan and the scopes of our research. The section thereafter is about the implementation
     of our setup in C++. Next, we will state our results, after which we will discuss set results and provide
     several conclusions.    
@@ -104,54 +104,51 @@
     about group 2 (with mean $x_2$ and standard deviation $\sigma_2$).  From this we can conclude that
     data structure 1 is, on average, unquestionably superior.
 
-    \subsection{Possible errors caused by the implementation being not entirely perfect}
+    \subsection{Errors possibly caused by an imperfect implementation}
 
-    We really did our best to make sure these kinds of things didn't happen.  However, there were
-    still a number of measurements that do not follow from the underlying theory and are likely a
+    There were a number of measurements that did not follow the underlying theory and are likely a
     consequence of the hardware involved.
 
-    In particular, constructing a small hash table after constructing many big ones takes an
-    absurdly long time.  Only the first hash table is affected, and the time is comparable to the
-    time required to construct a 4k element hash table, which is just silly.  It probably has
-    something to do with the allocator but the reason for such behaviour is still unclear.  The fact
-    a hashtable needs contiguous memory probably has something to do with it, as well as the
-    allocator returning memory to the operating system.  Still, the latter should also have happened
-    with the other structures.  Bizarre.
+    In particular, constructing a small hash table\footnote{state the number of elements in a "small" hash table}
+    after constructing many big ones takes a disproportionally long time.  Only the first hash table is affected, and the time is 			comparable to the time required to construct a hash table with 4000 elements, which is illogical.
+    We assume this is caused by the allocator but the reason for such behaviour is still unclear.  The fact
+    that a hashtable needs contiguous memory is likely to have some influence, as well as the
+    allocator returning memory to the operating system.  However, we reason the latter should also have happened
+    with the other structures.
 
-    A similar issue occurs around 4k or 8k (depending on data structure).  In all three cases, the
-    cost of insertion and querying grows at a higher rate than previously.  This is difficult to
+    A similar issue occurs around 4000 or 8000 elements (depending on data structure).  For all three
+    datastructures, the cost of inserting and querying grows at a higher rate than before.  This is difficult to
     quantify\footnote{Can we do some sort of linear regression to prove this is the case?}, but it
-    seems like some extra costs are added around then.  We suspect it is related either to the
-    allocator having to get more memory or the CPU cache running out and more cache misses occuring.
-    We'd measure that too if we had more time/resources.
+    appears some extra load is added at that point.  We suspect it is related either to the
+    allocator having to acquire more memory or the CPU cache running out and more cache misses occuring.
+    We would measure this as well, if there was more time.
 
-    A possibly related issue is that the standard deviation of our measurements rises around that
-    point.  That strengthens the possibility of it being allocator-related, as that would involve a
-    system call and could cause scheduling issues (despite the system being otherwise very close to
-    idle).
+    A potentially related issue is that the standard deviation of our measurements rises around the
+    same point.  That increases the likelihood of it being allocator-related, as that involves a
+    system call and could cause scheduling issues\footnote{elaborate/ref?}, despite the system being 
+    otherwise very close to idle.
 
-    Also, we have counterintuitive results that show that inserting or querying a full path is
+    Also, we acquired counterintuitive results showing that inserting or querying a full path is
     faster than querying only the domain name.  This can partially be explained\footnote{Not really,
-    but ehhh.} by the fact that the string implementation we used was based on reference counting.
-    (If it'd also provide SSO, this would be easy to explain, but the darn thing doesn't.)
-
+    but ehhh.}by the fact that the string implementation we used was based on reference counting.
+    %(If it'd also provide SSO, this would be easy to explain, but the darn thing doesn't.)
 
     \section{Conclusions}
     Our main point of research was researching which associative data structure performed best on
-    a various number of insertions, in terms of ths speed of insertions and look-ups, and memory.
+    a various number of insertions, in terms of the speed of insertions and look-ups, and memory usage.
     In terms of speed we can state with certainty that the hash table is the superior data structure.
     It outperforms the other two in almost every category, most significantly in larger datastructures where
-    it is often takes less than half as much time as the skiplist and less than twothirds the time of the binary search tree.
-    In most cases, the binary search tree is a bit slower, where the skip list is the slowest structure in
+    it often takes less than half as much time as the skiplist and less than two thirds the time of the binary search tree.
+    In most cases, the binary search tree is a bit slower, whereas the skip list is the slowest structure in
     virtually every case. The only motivation for using a hashmap for this problem appears to be in memory usage,
-    although the advantage gained from this is quite small.
+    although the advantage gained from this is relatively small.
     
     Our secondary point of research encompassed the effect of key complexity on associative data structures.
     Our different types of keys were IP adresses, domain names and full path URLs. We have seen that as expected,
-    IP adresses as keys give a significant speedup over the other two, and use less memory as well. Interesting to
-    note is that we found the only advantage of the binary search tree over the hashmap here, in that insertions of
+    IP adresses as keys provide a significant improvement over the other two, and uses less memory as well. Interesting to
+    note is that we found the only advantage of the binary search tree over the hashmap here, is that insertions of
     a small amount of IP adresses, up to around $2^13$ insertions, is faster. So when writing an application with very
-    few keys of low complexity, with more insertions than queries, the binary search tree may be the best option. Lastly,
+    few keys of low complexity, and with more insertions than queries, the binary search tree may be the best option. Finally,
     we have found that the domain key type does not outperform the full path key type. It is not significantly better
     if it is better at all.
     %The skip list uses the least memory but is awful in every other imaginable way.  The hashmap is
@@ -159,17 +156,17 @@
     %inserts than queries.  Note that this doesn't actually happen in practice.
     
     \section{Reflection}
-    In general, we are glad with the results of our research. We were able to provide clear and concise answers to our
+    In general, we are content with the results of our research. We were able to provide clear and concise answers to our
     research questions. Even though our research questions may appear broad, we have defined a good scope in our research
-    proposal and have virtually not mended this scope in our research. One small change is that we also included datasets of
-    size $2^8$ because we saw some interesting results in very small sets. In our implementation we have changed quite a few
-    things because we ran into pratical problems. Some of these required us to change the allocator and generate our keys
+    proposal and have virtually not altered this scope in our research. One small change is that we also included datasets of
+    size $2^8$ because we saw some interesting results in very small sets. In our implementation we have made some significant
+    changes because we ran into pratical problems. Some of these required us to change the allocator and generate our keys
     in a slightly different fashion, which we all documented in this paper.
     
-    Since we have found that the hash map is the best associative data structure overal for this problem, we might do further
+    Since we have found that the hash map is the best associative data structure overal for this problem, we could do further
     research in different kind of hash maps. We might try different hash functions, different methods of collision resolution,
     and perhaps survey different kinds of concurrent hash maps.
-    
+
     \bibliographystyle{alpha}
 
     \bibliography{paper}
