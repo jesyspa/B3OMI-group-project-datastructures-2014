@@ -6,14 +6,21 @@
 \usepackage{amsthm}
 \usepackage{hyperref}
 
-\title{Data Structures Comparative Review Thing}
+\title{Associative Data Structures for Website Filtering}
 \author{Pieter Brederode, Timo Koppenberg, \\ Jelco Bodewes, Anton Golov}
 
 \begin{document}
     \maketitle
 
     \begin{abstract}
-        We did research and got results~\cite{CallOfCthulhu}.
+        In this paper, we will research associative data structures. This is done in the context of
+        a website filter. We look at three different data structures, the hash map, binary search tree
+        and the skip list. We insert keys of three different types, namely IP adress, domain name and
+        full path URL. We judge the competency of our data strucutre based on insert time, query time
+        and memory usage, inserting data sets of sizes $2^x$ for $8 \le x \le 20$. We describe the details
+        of our research and the implementation using C++. The results are that hash maps are much faster
+        than the other structures, where skip lists use the least memory and binary search trees are
+        only useful with very few insertions of simple keys and more insertions than queries.
     \end{abstract}
 
 
