@@ -16,7 +16,7 @@
 
     \begin{abstract}
         We have researched the performance of the hash table, binary search tree, and skip list
-        associative datastructures in the context of a web filter.  Our measurements were made with
+        associative data structures in the context of a web filter.  Our measurements were made with
         structures of various sizes (ranging from $2^8$ up to $2^{20}$) and with different possible
         key types (from 4 to 120 bytes).  In this paper, we describe our implementation and
         empirically show that given a sufficiently high number of entries, a hash table has the
@@ -32,7 +32,7 @@
     A website filter is a program that categorises websites in order to restrict access to
     designated sites a user might visit. Commonly, the filter operates by keeping a blacklist of
     sites a user may not visit unless they have certain credentials, or alternatively, keeping a
-    whitelist and prohibiting any sites not on it.  As the world-wide web is growing, these lists
+    whitelist and prohibiting any sites not on it.  As the world wide web is growing, these lists
     have grown larger to a point where the speed of the underlying data structure has become a key
     issue.  The time of both inserting and looking up websites must be kept minimal. Moreover, the
     increased number of entries make memory usage an equally significant concern.
@@ -50,13 +50,13 @@
         structures?
     \end{quotation}
 
-    While the decision of data structure might mostly be dependant on the number of entries, the
+    While the decision of data structure might mostly be dependent on the number of entries, the
     complexity of the key might also be of concern. Where permissions per page would be preferred, a
-    more resource optimal solution might be found in filtering only on domain or even IP adress.  In
+    more resource optimal solution might be found in filtering only on domain or even IP address.  In
     researching the influence of this we formulate a secondary research question:
 
     \begin{quotation}
-        How does the complexity of the key influence the preformance of various associative data structures?
+        How does the complexity of the key influence the performance of various associative data structures?
     \end{quotation}
 
     In this paper, we attempt to answer these questions. Section~\ref{sec:plan} provides details
@@ -155,7 +155,7 @@
 
     After running a number of tests we chose to decrease the number of times we repeated each run.
     We had set out to perform each measurement 1000 times and take the average over that.  In
-    parctice, however, the results obtained by performing only 100 runs did not vary greatly, and
+    practice, however, the results obtained by performing only 100 runs did not vary greatly, and
     allowed us to perform more individual measurements.
 
 
@@ -188,7 +188,7 @@
     key type.  For the domain and full path key types, no correlation between the number of entries
     and the duration of insertion operations is observable.
 
-    \subsection{Difference in performance between different keytypes}
+    \subsection{Difference in performance between different key types}
 
     In order to answer the second part of our research question, we must compare the behaviour of
     the data structures given different key types.  We start by fixing the number of entries; we
@@ -235,10 +235,10 @@
     the other structures.
 
     A similar issue occurs around 4000 or 8000 elements (depending on data structure).  For all
-    three datastructures, the cost of inserting and querying grows at a higher rate than before.
+    three data structures, the cost of inserting and querying grows at a higher rate than before.
     This is difficult to quantify, but it appears some extra load is added at that point.  We suspect it is related
     either to the allocator having to acquire more memory or the CPU cache running out and more
-    cache misses occuring.
+    cache misses occurring.
 
     This is also a possible explanation that the results we obtained which claimed that operations
     for a full path key are more efficient than identical operations for a domain key.  An
@@ -263,9 +263,9 @@
     and inserts are rare.
 
     Our secondary point of research encompassed the effect of key complexity on associative data
-    structures.  Our different types of keys were IP adresses, domain names and full path URLs.  Our
+    structures.  Our different types of keys were IP addresses, domain names and full path URLs.  Our
     measurements confirmed our intuition that IP addresses impose significantly lower costs over the
-    other two key types, as well as requiring less memory.  This improvement was more noticable in
+    other two key types, as well as requiring less memory.  This improvement was more noticeable in
     the binary search tree than in the two other systems.  The corresponding expected improvement
     when comparing the domain key type to the full path key type were not observed.
 
@@ -285,7 +285,7 @@
 
     Knowing the strengths and weaknesses of the various data structures, further research could
     compare subvariants of the hash table and skip list.  In particular, it may be of interest to
-    experiment with differen choices of hash function and collision resolution scheme.  Larger
+    experiment with different choices of hash function and collision resolution scheme.  Larger
     numbers of elements may also provide interesting challenges, as the number of elements may be
     too great to keep in main memory.  Finally, the situation where a map is accessed by multiple
     threads concurrently provides extra complications that could be considered.
