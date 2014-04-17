@@ -95,7 +95,7 @@
     necessary tools, and does not carry the risk of garbage collection pauses or effects due to
     ``warming-up time''.
 
-    \subsection*{Data Structures}
+    \subsection{Data Structures}
 
     Using C++ as the implementation language, we chose libstdc++'s implementations of the standard class
     templates \texttt{std::map} and \texttt{std::unordered\_map} for the binary search
@@ -104,7 +104,7 @@
     \texttt{CSSkipList}\footnote{reference to library home page here}.  We also used libstdc++'s
     implementation of \texttt{std::string} for our string handling\footnote{specify?}needs.
 
-    \subsubsection*{Data}
+    \subsection{Data Sources}
     For our data, we used datasets containing $2^x$ elements with $x$ an integer such that $8 < x <
     21$. Thus we have twelve different dataset sizes. We took the system's dictionary file and the
     list of top level domains from Wikipedia and combined these to generate a list of items in the
@@ -117,9 +117,12 @@
     used 32 bit integers. The exact implementation can be viewed in the sourcecode\footnote{ref to
     apendix or code dump}.
 
-    \subsection*{Measurements}
+    \subsection{Measurements}
+    \label{subsec:measurements}
     For our time measurements, we used libstdc++'s implementation of the standard
-    \texttt{std::chrono::high\_resolution\_clock} class.
+    \texttt{std::chrono::high\_resolution\_clock} class.  There is no official documentation about
+    the resolution of this clock, but measurements show that it is likely below one microsecond,
+    which is sufficient for our purposes.\footnote{\url{http://stackoverflow.com/a/5524138/559931}}
 
     Memory measurements were performed by providing a custom allocator which tracked the number of
     memory requests.  Note that the latter deviates from our initial plan, where we
@@ -177,38 +180,45 @@
 
     \section{Conclusions}
     Our main point of research was researching which associative data structure performed best on a
-    various number of insertions, in terms of the speed of insertions and look-ups, and memory
-    usage.  In terms of speed we can state with certainty that the hash table is the superior data
-    structure.  It outperforms the other two in almost every category, most significantly in larger
-    datastructures where it often takes less than half as much time as the skiplist and less than
-    two thirds the time of the binary search tree.  In most cases, the binary search tree is a bit
-    slower, whereas the skip list is the slowest structure in virtually every case. The only
-    motivation for using a hashmap for this problem appears to be in memory usage, although the
-    advantage gained from this is relatively small.
+    various number of insertions, in terms of the speed of insertions and queries, and in terms of
+    memory necessary per element.  In terms of speed we can state with certainty that the hash table
+    is the superior data structure.  It outperforms the other two in almost every category,
+    particularly in cases where the number of elements is high, where it is roughly two times faster
+    than the skip list and one and a half times faster than the binary search tree.  The binary
+    search tree outperforms the hash table when the number of elements is low, and the number of
+    insertions is relatively larger than the number of queries.  Whether this situation can occur in
+    practice depends on the speed of deletions, which we have not measured; in the given context,
+    however, the conditions are unlikely to be achieved.  A skip list may be preferable if memory
+    usage is more important than query speeds; given that both insert and query operations take less
+    than ten microseconds even in the largest maps we measured, this is likely the case if queries
+    and inserts are rare.
 
     Our secondary point of research encompassed the effect of key complexity on associative data
-    structures.  Our different types of keys were IP adresses, domain names and full path URLs. We
-    have seen that as expected, IP adresses as keys provide a significant improvement over the other
-    two, and uses less memory as well. Interesting to note is that we found the only advantage of
-    the binary search tree over the hashmap here, is that insertions of a small amount of IP
-    adresses, up to around $2^13$ insertions, is faster. So when writing an application with very
-    few keys of low complexity, and with more insertions than queries, the binary search tree may be
-    the best option. Finally, we have found that the domain key type does not outperform the full
-    path key type. It is not significantly better if it is better at all.
+    structures.  Our different types of keys were IP adresses, domain names and full path URLs.  Our
+    measurements confirmed our intuition that IP addresses impose significantly lower costs over the
+    other two key types, as well as requiring less memory.  This improvement was more noticable in
+    the binary search tree than in the two other systems.  The corresponding expected improvement
+    when comparing the domain key type to the full path key type were not observed.
 
     \section{Reflection}
     In general, we are content with the results of our research. We were able to provide clear and
     concise answers to our research questions. Even though our research questions may appear broad,
-    we have defined a good scope in our research proposal and have virtually not altered this scope
-    in our research. One small change is that we also included datasets of size $2^8$ because we saw
-    some interesting results in very small sets. In our implementation we have made some significant
-    changes because we ran into pratical problems. Some of these required us to change the allocator
-    and generate our keys in a slightly different fashion, which we all documented in this paper.
+    we have defined a good scope in our research proposal and have not altered the overall goal
+    of our research.  Errors in the implementation lead us to having to discard measurements of 256
+    elements as the outliers were too great to compensate for.  Fortunately, our focus lay primarily
+    on the larger datasets and thus this is not significant for our conclusions.  The implementation
+    we finally arrived at differs from what we outlined, but the changes are largely to increase the
+    accuracy of measurements or the speed at which measurements can be obtained, and have no
+    fundamental influence on the results.  The primary difficulty we encountered was the number of
+    dimensions in our data: with 117 independent measurements, it took considerable time to perform
+    them all, and then to perform statistical analysis on them.
 
-    Since we have found that the hash map is the best associative data structure overal for this
-    problem, we could do further research in different kind of hash maps. We might try different
-    hash functions, different methods of collision resolution, and perhaps survey different kinds of
-    concurrent hash maps.
+    Knowing the strengths and weaknesses of the various data structures, further research could
+    compare subvariants of the hash table and skip list.  In particular, it may be of interest to
+    experiment with differen choices of hash function and collision resolution scheme.  Larger
+    numbers of elements may also provide interesting challenges, as the number of elements may be
+    too great to keep in main memory.  Finally, the situation where a map is accessed by multiple
+    threads concurrently provides extra complications that could be considered.
 
     \bibliographystyle{alpha}
 
