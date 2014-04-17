@@ -142,7 +142,7 @@
     For our time measurements, we used libstdc++'s implementation of the standard
     \texttt{std::chrono::high\_resolution\_clock} class.  There is no official documentation about
     the resolution of this clock, but measurements show that it is likely below one microsecond,
-    which is sufficient for our purposes.\footnote{\url{http://stackoverflow.com/a/5524138/559931}}
+    which is sufficient for our purposes.
 
     Memory measurements were performed by providing a custom allocator which tracked the number of
     memory requests.  Note that the latter deviates from our initial plan, where we stated we would
