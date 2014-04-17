@@ -139,12 +139,30 @@
     virtually every case. The only motivation for using a hashmap for this problem appears to be in memory usage,
     although the advantage gained from this is quite small.
     
+    Our secondary point of research encompassed the effect of key complexity on associative data structures.
+    Our different types of keys were IP adresses, domain names and full path URLs. We have seen that as expected,
+    IP adresses as keys give a significant speedup over the other two, and use less memory as well. Interesting to
+    note is that we found the only advantage of the binary search tree over the hashmap here, in that insertions of
+    a small amount of IP adresses, up to around $2^13$ insertions, is faster. So when writing an application with very
+    few keys of low complexity, with more insertions than queries, the binary search tree may be the best option. Lastly,
+    we have found that the domain key type does not outperform the full path key type. It is not significantly better
+    if it is better at all.
+    %The skip list uses the least memory but is awful in every other imaginable way.  The hashmap is
+    %usually the best, except when we're dealing with a small number of integer keys and doing far more
+    %inserts than queries.  Note that this doesn't actually happen in practice.
     
+    \section{Reflection}
+    In general, we are glad with the results of our research. We were able to provide clear and concise answers to our
+    research questions. Even though our research questions may appear broad, we have defined a good scope in our research
+    proposal and have virtually not mended this scope in our research. One small change is that we also included datasets of
+    size $2^8$ because we saw some interesting results in very small sets. In our implementation we have changed quite a few
+    things because we ran into pratical problems. Some of these required us to change the allocator and generate our keys
+    in a slightly different fashion, which we all documented in this paper.
     
-    The skip list uses the least memory but is awful in every other imaginable way.  The hashmap is
-    usually the best, except when we're dealing with a small number of integer keys and doing far more
-    inserts than queries.  Note that this doesn't actually happen in practice.
-
+    Since we have found that the hash map is the best associative data structure overal for this problem, we might do further
+    research in different kind of hash maps. We might try different hash functions, different methods of collision resolution,
+    and perhaps survey different kinds of concurrent hash maps.
+    
     \bibliographystyle{alpha}
 
     \bibliography{paper}
