@@ -6,14 +6,21 @@
 \usepackage{amsthm}
 \usepackage{hyperref}
 
-\title{Data Structures Comparative Review Thing}
+\title{Associative Data Structures for Website Filtering}
 \author{Pieter Brederode, Timo Koppenberg, \\ Jelco Bodewes, Anton Golov}
 
 \begin{document}
     \maketitle
 
     \begin{abstract}
-        We did research and got results~\cite{CallOfCthulhu}.
+        In this paper, we will research associative data structures. This is done in the context of
+        a website filter. We look at three different data structures, the hash map, binary search tree
+        and the skip list. We insert keys of three different types, namely IP adress, domain name and
+        full path URL. We judge the competency of our data strucutre based on insert time, query time
+        and memory usage, inserting data sets of sizes $2^x$ for $8 \le x \le 20$. We describe the details
+        of our research and the implementation using C++. The results are that hash maps are much faster
+        than the other structures, where skip lists use the least memory and binary search trees are
+        only useful with very few insertions of simple keys and more insertions than queries.
     \end{abstract}
 
 
@@ -33,14 +40,14 @@
     one would perform best under a various number of insertions. The main research question of this paper
     is as follows:
     
-    How does the number of entries influence the performance of various associative data structures?
+    \begin{quotation}How does the number of entries influence the performance of various associative data structures?\end{quotation}
     
     While the decision of data structure might mostly be dependant on the number of entries, the complexity
     of the key might also be of concern. Where permissions per page would be preferred, a more
     resource optimal solution might be found in filtering only on domain or even IP adress.
     In researching the influence of this we formulate a secondary research question:
     
-    How does the complexity of the key influence the preformance of various associative data structures?
+    \begin{quotation}How does the complexity of the key influence the preformance of various associative data structures?\end{quotation}
     
     In the following paper, we will attempt to answer these questions. The next section will give details
     about our research plan and the scopes of our research. The section thereafter is about the implementation
