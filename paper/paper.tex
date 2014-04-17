@@ -13,52 +13,67 @@
     \maketitle
 
     \begin{abstract}
-        In this paper, we will research associative data structures for searching. This is done in the context of
-        a website filter. We look at three different data structures: the hash map, the binary search tree
-        and the skip list. We insert keys of three different types, namely IP adress, domain name and
-        full path URL. We judge the competency of our data strucutre based on insertion times, query times
-        and memory usage, inserting data sets of sizes $2^x$ for $8 \le x \le 20$. We describe the details
-        of our research and the implementation using C++. The results are that hash maps are much faster
-        than the other structures, skip lists use the least memory and binary search trees are
-        only useful with very few insertions of simple keys and more insertions than queries.
+        We have researched the performance of the hash table, binary search tree, and skip list
+        associative datastructures in the context of a web filter.  Our measurements were made with
+        structures of various sizes (ranging from $2^8$ up to $2^{20}$) and with different possible
+        key types (from 4 to 120 bytes).  In this paper, we describe our implementation and
+        empirically show that given a sufficiently high number of entries, a hash table has the
+        highest insertion and query speeds, while the skip list requires the least memory per
+        element.
+        % And when I say "hash table", I mean libstdc++'s unordered_map, and when I say bst I mean
+        % libstdc++'s map, and if you took different implementations you'd probably get different
+        % results...
     \end{abstract}
 
 
     \section{Introduction}
     A website filter is a program that categorises websites in order to restrict access to designated
-    sites a user might visit. Commonly, the filter includes a blacklist of sites a user may not visit
-    unless they have certain credentials, or alternatively, includes a whitelist so it can blacklist
-    everything else. As the world-wide web is growing, these lists have grown larger to a point where
-    the speed of the underlying data structure has become a key issue. The time of both inserting and
-    looking up websites must be kept minimal. This all must be done without too much of a trade-off
-    between speed and memory usage.
-    
-    In technical terms, we would want the best data structure for associating many URLs with their
-    respective permissions, be it whitelisted or blacklisted for certain users. In researching the best
-    associative data structure we have picked implementations of the binary search tree, the hash map
-    and the skip list. These are the key options in such a problem. We are interested in finding which
-    one would perform best under a various number of insertions. The main research question of this paper
-    is as follows:
-    
-    \begin{quotation}How does the number of entries influence the performance of various associative data structures?\end{quotation}
-    
-    While the decision of data structure might mostly be dependant on the number of entries, the complexity
-    of the key might also be of concern. Where permissions per page would be preferred, a more
-    resource optimal solution might be found in filtering only on domain or even IP adress.
-    In researching the influence of this we formulate a secondary research question:
-    
-    \begin{quotation}How does the complexity of the key influence the preformance of various associative data structures?\end{quotation}
-    
-    In the following paper, we will attempt to answer these questions. The next section will provide details
-    about our research plan and the scopes of our research. The section thereafter is about the implementation
-    of our setup in C++. Next, we will state our results, after which we will discuss set results and provide
-    several conclusions.    
-    %We did research about what data structure could best be used to represent a blacklist in a 
-    %web-filter application.  We compared the insertion speed, query speed, and memory usage of three
-    %data structures: the binary search tree, the hash table, and the skip list.  We did this because
-    %we really liked these three structures. 
+    sites a user might visit. Commonly, the filter operates by keeping a blacklist of sites a user may not visit
+    unless they have certain credentials, or alternatively, keeping a whitelist and prohibiting any
+    sites not on it.  As the world-wide web is growing, these lists have grown larger to a point where
+    the speed of the underlying data structure has become a key issue.  The time of both inserting and
+    looking up websites must be kept minimal. Moreover, the increased number of entries make memory
+    usage an equally significant concern.
+
+    In technical terms, we are interested in the best data structure for associating many URLs with
+    their respective permissions, be it whitelisted or blacklisted for certain users.  We have
+    chosen to compare the performance of the binary search tree, the hash map, and the skip list, as
+    these are commonly employed in practice.  It is of particular interest how each data structure
+    will scale as the number of elements rises.  We have thus chosen for our main research question
+    the following:
+    % Guys, did you notice we did absolutely nothing about predicting this?
+
+    \begin{quotation}
+        How does the number of entries influence the performance of various associative data
+        structures?
+    \end{quotation}
+
+    While the decision of data structure might mostly be dependant on the number of entries, the
+    complexity of the key might also be of concern. Where permissions per page would be preferred, a
+    more resource optimal solution might be found in filtering only on domain or even IP adress.  In
+    researching the influence of this we formulate a secondary research question:
+
+    \begin{quotation}
+        How does the complexity of the key influence the preformance of various associative data structures?
+    \end{quotation}
+
+    In this paper, we attempt to answer these questions. Section~\ref{sec:plan} provides details
+    about our research plan and the scopes of our research. Section~\ref{sec:implementation} is
+    about the implementation of our setup in C++.  The rest of the paper states our results and the
+    conclusions that can be drawn from them.
+
+    \section{Plan}
+    \label{sec:plan}
+
     \section{Implementation}
-    \subsubsection*{Datastructures}
+    \label{sec:implementation}
+
+    We used C++ implementations of the data structures involved, and also the language for our
+    measuring code.  We chose C++ as it is an industry standard\footnote{ref}, provides the
+    necessary tools, and does not carry the risk of garbage collection pauses or effects due to
+    ``warming-up time''.
+
+    \subsection*{Data Structures}
 
     Using C++ as the implementation language, we chose libstdc++'s implementations of the standard class
     templates \texttt{std::map} and \texttt{std::unordered\_map} for the binary search
@@ -66,8 +81,8 @@
     list\footnote{reference to the standard here}, we used an open-source third party library,
     \texttt{CSSkipList}\footnote{reference to library home page here}.  We also used libstdc++'s
     implementation of \texttt{std::string} for our string handling\footnote{specify?}needs.
-    
-    \subsubsection*{Data}
+
+    \subsection*{Data}
     For our data, we took the system's dictionary file and the list of top level domains from Wikipedia
     and combined these to generate a list of items in the form \texttt{www.\$word.\$tld}, where
     \texttt{\$word} is one of words from the the dictionary and \texttt{\$tld} is a top level domain.  Only
@@ -77,10 +92,10 @@
     and each was appended a random alphanumeric string of eighty characters.  The exact implementation
     can be viewed in the sourcecode\footnote{ref to apendix or code dump}.
 
-	\subsubsection*{Measurements}
+    \subsection*{Measurements}
     For our time measurements, we used libstdc++'s implementation of the standard
     \texttt{std::chrono::high\_resolution\_clock} class.
-    
+
     Memory measurements were performed by providing a custom allocator which tracked the number of memory
     requests.  Note that the latter deviates from our initial plan, where we stated\footnote{ref?}we would
     use the POSIX API\footnote{ref to the posix api}.  Unfortunately, that turned out to be too
