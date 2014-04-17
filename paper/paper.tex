@@ -5,6 +5,7 @@
 \usepackage{amsfonts}
 \usepackage{amsthm}
 \usepackage{hyperref}
+\usepackage{url}
 \usepackage[pdftex]{graphicx}
 
 \title{Associative Data Structures for Website Filtering}
@@ -38,10 +39,10 @@
 
     In technical terms, we are interested in the best data structure for associating many URLs with
     their respective permissions, be it whitelisted or blacklisted for certain users.  We have
-    chosen to compare the performance of the binary search tree, the hash table, and the skip list, as
-    these are commonly employed in practice.  It is of particular interest how each data structure
-    will scale as the number of elements rises.  We have thus chosen for our main research question
-    the following:
+    chosen to compare the performance of the binary search tree, the hash table, and the skip list
+    data structures~\cite{Algorithms} as these are commonly employed in practice.  It is of
+    particular interest how each data structure will scale as the number of elements rises.  We have
+    thus chosen for our main research question the following:
     % Guys, did you notice we did absolutely nothing about predicting this?
 
     \begin{quotation}
@@ -105,21 +106,21 @@
     \label{sec:implementation}
 
     We used C++ implementations of the data structures involved, and also used the language for our
-    measuring code.  We chose C++ as it is an industry standard\footnote{ref}, provides the
+    measuring code.  We chose C++ as it is an industry standard~\cite{TC++PL}, provides the
     necessary tools, and does not carry the risk of garbage collection pauses or effects due to
     ``warming-up time''.
 
     The following is an overview of our implementation.  More specific details can be found in the
-    source code.\footnote{cite code here}
+    source code~\cite{OurCode}.
 
     \subsection{Data Structures}
 
-    With C++ as the implementation language, we chose libstdc++'s implementations of the standard
+    With C++ as the implementation language, we chose \texttt{libstdc++}'s implementations of the standard
     class templates \texttt{std::map} and \texttt{std::unordered\_map} for the binary search tree
-    and the hash table respectively.  As the C++ standard library does not contain a skip
-    list\footnote{reference to the standard here}, we used an open-source third party library,
-    \texttt{CSSkipList}\footnote{reference to library home page here}.  We also used libstdc++'s
-    implementation of \texttt{std::string} for our string handling\footnote{specify?}needs.
+    and the hash table respectively~\cite{C++11}.  As the C++ standard library does not contain a
+    skip list, we used an open-source third party library, \texttt{CSSkipList}~\cite{CSSkipList}.
+    We also used \texttt{libstdc++}'s implementation of \texttt{std::string} for the storage of
+    domains and full paths.
 
     \subsection{Data Sources}
 
